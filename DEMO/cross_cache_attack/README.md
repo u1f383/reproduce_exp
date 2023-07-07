@@ -1,5 +1,5 @@
 - title: cross cache attack
 - desc: cross cache attack practice in linux-6.3.8
 - PoC: release a slab to buddy system and let another cache occupy it
-- Ref: https://veritas501.github.io/2023\_03\_07-Cross%20Cache%20Attack%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/
+- Ref: https://veritas501.github.io/2023_03_07-Cross%20Cache%20Attack%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/
     - since the kernel version of that article is 5.13, there are some differences in the latest kernel
