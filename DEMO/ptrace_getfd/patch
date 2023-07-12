@@ -1,0 +1,51 @@
+diff --git a/ptrace.c b/kernel/ptrace.c
+index ae300e7..0e11320 100644
+--- a/ptrace.c
++++ b/kernel/ptrace.c
+@@ -33,6 +33,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/minmax.h>
+ #include <linux/syscall_user_dispatch.h>
++#include <linux/fdtable.h>
+ 
+ #include <asm/syscall.h>	/* for syscall_get_* */
+ 
+@@ -1028,6 +1029,29 @@ ptrace_get_syscall_info(struct task_struct *child, unsigned long user_size,
+ }
+ #endif /* CONFIG_HAVE_ARCH_TRACEHOOK */
+ 
++static int ptrace_owo(struct task_struct *child, unsigned int fd)
++{
++    struct file *file;
++    int ret;
++
++    file = task_lookup_fd_rcu(child, fd);
++    if (file == NULL) {
++        ret = -ENOENT;
++        goto out;
++    }
++
++    ret = get_unused_fd_flags(0);
++    if (ret < 0)
++        goto out;
++
++    get_file(file);
++    fd_install(ret, file);
++    fput(file);
++
++out:
++    return ret;
++}
++
+ int ptrace_request(struct task_struct *child, long request,
+         unsigned long addr, unsigned long data)
+ {
+@@ -1039,6 +1063,8 @@ int ptrace_request(struct task_struct *child, long request,
+     unsigned long flags;
+ 
+     switch (request) {
++        case PTRACE_OWO:
++            return ptrace_owo(child, data);
+         case PTRACE_PEEKTEXT:
+         case PTRACE_PEEKDATA:
+             return generic_ptrace_peekdata(child, addr, data);
